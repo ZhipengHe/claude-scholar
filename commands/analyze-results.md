@@ -1,6 +1,6 @@
 ---
 name: analyze-results
-description: Analyze experimental results and generate a strict analysis bundle with rigorous statistics, real scientific figures, and figure interpretation guidance. Triggers data-analyst agent to perform academic-grade analysis.
+description: Run the full post-experiment workflow in one command: strict statistical analysis, real scientific figures, and a decision-oriented results report. Uses results-analysis + results-report as a two-stage workflow.
 args:
   - name: data_path
     description: Path to experimental results (CSV, JSON, logs, or directory)
@@ -9,22 +9,62 @@ args:
     description: Type of analysis (full, comparison, ablation, visualization)
     required: false
     default: full
-tags: [Research, Analysis, Statistics, Visualization]
+  - name: purpose
+    description: Optional report purpose slug (e.g. transfer-summary, ablation-report)
+    required: false
+    default: auto
+  - name: round
+    description: Optional experiment round number for report naming
+    required: false
+  - name: experiment_line
+    description: Optional experiment line slug for report naming
+    required: false
+tags: [Research, Analysis, Statistics, Visualization, Reporting]
 ---
 
 # Analyze Results Command
 
-快速启动 **strict analysis bundle** 生成流程。
+一键执行**实验后分析 + 报告成稿**工作流。
+
+这是用户默认应该使用的入口。
+
+如果你只是想“跑严格统计和科研图，不写总结报告”，才单独走 `results-analysis`。
 
 ## 目标
 
-此命令用于生成：
-- 严谨统计分析
-- 真实科研图
-- 图表说明与 interpretation checklist
-- 可供后续 `results-report` 复用的分析底座
+此命令负责把一次实验结果处理成两层产物：
 
-此命令**不负责**生成论文 `Results` 草稿。
+### Phase 1: strict analysis bundle
+- 严格统计分析
+- 真实科研图
+- figure interpretation checklist
+- 可追溯的统计附录
+
+### Phase 2: complete results report
+- 完整实验总结报告
+- 逐图解释与结论串联
+- 面向决策的 next actions
+- 如已绑定 Obsidian，则自动写回知识库
+
+换句话说，`/analyze-results` 不只是“分析”，而是：
+
+> **先做 evidence-first analysis，再基于证据生成完整实验报告。**
+
+## 默认编排
+
+命令默认按以下顺序执行：
+
+1. **定位输入**
+   - 找到实验目录、CSV/JSON、日志、图表原料与比较对象
+2. **Phase 1 严格分析**
+   - 使用 `results-analysis`
+3. **Phase 2 完整报告**
+   - 使用 `results-report`
+   - 基于 Phase 1 产物写出完整实验总结报告
+4. **知识库回写**
+   - 如果当前 repo 已绑定 Obsidian project memory，则写回 `Results/Reports/`、相关 `Experiments/`、`Daily/` 和 project memory
+5. **显式报告 blocker**
+   - 若统计输入不足、无法画图或命名信息缺失，必须说明阻塞点，不能伪造结论
 
 ## 使用方法
 
@@ -34,102 +74,110 @@ tags: [Research, Analysis, Statistics, Visualization]
 /analyze-results
 ```
 
-### 指定数据路径
+### 指定实验目录
 
 ```bash
-/analyze-results path/to/results.csv
+/analyze-results path/to/experiment_dir
 ```
 
 ### 指定分析类型
 
 ```bash
-/analyze-results path/to/results/ comparison
+/analyze-results path/to/results comparison
 ```
+
+### 指定报告用途与轮次
+
+```bash
+/analyze-results path/to/results full transfer-summary 3 freezing
+```
+
+## 参数说明
+
+| 参数 | 说明 |
+|------|------|
+| `data_path` | 实验结果路径，可为目录、CSV、JSON 或日志 |
+| `analysis_type` | `full` / `comparison` / `ablation` / `visualization` |
+| `purpose` | 报告用途 slug；默认自动推断，无法推断时需显式说明 |
+| `round` | 实验轮次；用于报告命名，未知时允许暂用 `r00` 并注明 |
+| `experiment_line` | 实验线 slug，如 `freezing`、`contrastive-adversarial` |
 
 ## 分析类型
 
-| 类型 | 说明 | 输出 |
-|------|------|------|
-| `full` | 完整严格分析（默认） | analysis report + stats appendix + figure catalog + real figures |
-| `comparison` | 模型对比 | 主对比图 + 显著性检验 + effect size |
-| `ablation` | 消融实验 | 组件贡献分析 + supporting figure |
-| `visualization` | 图表优先 | 实图生成 + caption/interpretation requirements |
+| 类型 | 说明 | Phase 1 重点 | Phase 2 重点 |
+|------|------|--------------|--------------|
+| `full` | 完整严格分析（默认） | 完整统计 + 主图 + supporting figure | 完整实验总结报告 |
+| `comparison` | 模型对比 | 显著性检验 + effect size + 主对比图 | 哪个方案更值得继续 |
+| `ablation` | 消融实验 | 组件贡献分析 + 稳定性分析 | 哪个组件真正改变了结果 |
+| `visualization` | 图表优先 | 高质量科研图 + 图表解释 | 图驱动的结果复盘 |
 
-## 工作流程
+## 输出产物
 
-1. **数据定位** - 找到实验结果文件、日志与比较对象
-2. **数据验证** - 检查 comparability、样本单位、缺失项
-3. **严格统计** - 执行假设检查、显著性检验、effect size、多重比较校正
-4. **生成真实图表** - 优先生成实际科研图，而不是只写 specs
-5. **输出分析 bundle** - 写出分析报告、统计附录、图表目录
-6. **显式报告 blocker** - 输入不完整时必须指出原因
-
-## 输出文件
-
-命令执行后默认生成：
+### Phase 1 输出
 
 ```text
 analysis-output/
-├── analysis-report.md      # 关键发现、比较结论、限制
-├── stats-appendix.md       # 完整统计附录
-├── figure-catalog.md       # 每张图的用途、caption要求、解释清单
-└── figures/                # 真实科研图
+├── analysis-report.md
+├── stats-appendix.md
+├── figure-catalog.md
+└── figures/
 ```
 
-## 示例
+### Phase 2 输出
 
-### 示例 1：分析单个实验结果目录
-
-```bash
-/analyze-results experiments/model_family/
+```text
+Results/Reports/
+└── YYYY-MM-DD--{experiment-line}--r{round}--{purpose}.md
 ```
 
-**输出**：
-- 主指标的 descriptive + inferential analysis
-- 至少一张主图
-- 统计附录
-- figure catalog
+报告标题默认遵循：
 
-### 示例 2：对比多个模型
-
-```bash
-/analyze-results experiments/comparison/ comparison
+```text
+{Experiment Line} / Round {N} / {Purpose} / {YYYY-MM-DD}
 ```
 
-**输出**：
-- 多模型性能对比图
-- 显著性检验（含 correction）
-- effect size
-- 图后 interpretation checklist
+## 执行规则
 
-### 示例 3：消融实验分析
+### 统计与图表
+- 必须优先生成真实科研图，而不是只写 visualization specs
+- 必须报告样本单位、seed/run 数、`95% CI`、effect size、multiple-comparison handling
+- 假设不满足时必须改用 non-parametric fallback 或显式说明不能做强推断
 
-```bash
-/analyze-results experiments/ablation/ ablation
-```
+### 报告生成
+- 报告必须基于 Phase 1 的真实证据，而不是凭印象总结
+- 报告必须覆盖：main findings、statistical validation、figure-by-figure interpretation、negative results、next actions
+- 报告默认是**内部实验总结报告**，不是论文 `Results` section
 
-**输出**：
-- 各组件贡献分析
-- supporting ablation figure
-- 稳定性 / 解释边界
+### Obsidian 写回
+如果 repo 已绑定 Obsidian knowledge base，则至少执行：
+- 新建/更新 `Results/Reports/{report-name}.md`
+- 回链对应 `Experiments/` note
+- 若结论已稳定，更新 canonical `Results/` note
+- 追加当天 `Daily/YYYY-MM-DD.md`
+- 更新 `.claude/project-memory/<project_id>.md`
 
-## 集成说明
+## 何时不用这个命令
 
-此命令触发 **data-analyst agent**，该 agent 会：
-1. 使用 **results-analysis skill** 的方法论
-2. 优先生成真实科研图
-3. 保持统计完整性与可复现性
-4. 为后续 `results-report` 提供可信输入
+以下场景不必默认使用 `/analyze-results`：
 
-## 注意事项
+1. **你只要统计和图，不要实验总结报告**
+   - 直接用 `results-analysis` 生成 Phase 1 strict analysis bundle
+2. **你已经有 analysis bundle，只差最终报告**
+   - 直接用 `results-report`
+3. **你要写论文 Results section**
+   - 不应由本命令直接替代 manuscript writing workflow
 
-- 至少提供可比较的原始指标或 seed-level 结果
-- 对多组比较需显式处理 multiple comparisons
-- 若无法生成真实图表，必须说明缺失字段或阻塞点
-- 该命令不会产出 `results-draft.md`
+## 集成关系
 
-## 相关资源
+- **Primary user entrypoint**: `/analyze-results`
+- **Phase 1 skill**: `results-analysis`
+- **Phase 2 skill**: `results-report`
 
-- **Skill**: `results-analysis`
-- **Agent**: `data-analyst`
-- **Follow-up Skill**: `results-report`
+## 成功标准
+
+完成后至少应满足：
+- 有 strict analysis bundle
+- 有命名规范正确的 results report
+- 图表与文字解释一致
+- blocker 与限制被明确写出
+- 若 repo 绑定 Obsidian，知识库已完成最小写回

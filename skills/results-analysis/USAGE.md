@@ -17,9 +17,9 @@ analysis-output/
 ```text
 /analyze-results (Command)
     ↓
-data-analyst (Agent)
-    ↓
 results-analysis (Skill)
+    ↓
+results-report (Skill, optional follow-up)
 ```
 
 ## 适用场景

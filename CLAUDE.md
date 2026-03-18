@@ -72,7 +72,7 @@ Ideation → ML Development → Experiment Analysis → Paper Writing → Self-R
 |-------|-----------|----------|
 | 1. Research Ideation | `research-ideation` skill + `literature-reviewer` agent + Zotero MCP | `/research-init`, `/zotero-review`, `/zotero-notes` |
 | 2. ML Project Dev | `architecture-design` skill + `code-reviewer` agent | `/plan`, `/commit`, `/tdd` |
-| 3. Experiment Analysis | `results-analysis` skill + `results-report` skill + `data-analyst` agent | `/analyze-results` |
+| 3. Experiment Analysis | `results-analysis` skill + `results-report` skill | `/analyze-results` |
 | 4. Paper Writing | `ml-paper-writing` skill + `paper-miner` agent | - |
 | 5. Self-Review | `paper-self-review` skill | - |
 | 6. Submission & Rebuttal | `review-response` skill + `rebuttal-writer` agent | `/rebuttal` |
@@ -251,7 +251,6 @@ Ideation → ML Development → Experiment Analysis → Paper Writing → Self-R
 - **literature-reviewer** - Literature search, classification, and trend analysis (Zotero MCP integration: auto-import, full-text reading)
 - **literature-reviewer-obsidian** - Filesystem-first literature review from the Obsidian project knowledge base
 - **research-knowledge-curator-obsidian** - Default curator for project plans, daily logs, literature, experiments, results, and writing in Obsidian
-- **data-analyst** - Automated data analysis and visualization
 - **rebuttal-writer** - Systematic rebuttal writing with tone optimization
 - **paper-miner** - Extract writing knowledge from successful papers
 

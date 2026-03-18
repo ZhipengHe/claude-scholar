@@ -72,7 +72,7 @@
 |------|---------|------|
 | 1. 研究构思 | `research-ideation` skill + `literature-reviewer` agent + Zotero MCP | `/research-init`, `/zotero-review`, `/zotero-notes` |
 | 2. ML 项目开发 | `architecture-design` skill + `code-reviewer` agent | `/plan`, `/commit`, `/tdd` |
-| 3. 实验分析 | `results-analysis` skill + `results-report` skill + `data-analyst` agent | `/analyze-results` |
+| 3. 实验分析 | `results-analysis` skill + `results-report` skill | `/analyze-results` |
 | 4. 论文写作 | `ml-paper-writing` skill + `paper-miner` agent | - |
 | 5. 论文自审 | `paper-self-review` skill | - |
 | 6. 投稿与 Rebuttal | `review-response` skill + `rebuttal-writer` agent | `/rebuttal` |
@@ -251,7 +251,6 @@
 - **literature-reviewer** - 文献搜索、分类和趋势分析（Zotero MCP 集成，支持自动导入、全文阅读）
 - **literature-reviewer-obsidian** - 基于 filesystem 的 Obsidian 项目知识库文献综述
 - **research-knowledge-curator-obsidian** - 默认维护项目计划、TODO、文献、实验、结果、会议和写作的 Obsidian curator
-- **data-analyst** - 自动化数据分析和可视化
 - **rebuttal-writer** - 系统化 rebuttal 写作，语气优化
 - **paper-miner** - 从成功论文中提取写作知识
 

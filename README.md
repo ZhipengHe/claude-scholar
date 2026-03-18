@@ -14,20 +14,20 @@
   <strong>Language</strong>: <a href="README.md">English</a> | <a href="README.zh-CN.md">中文</a>
 </div>
 
-> Semi-automated research assistant for academic research and software development. Supports [Claude Code](https://github.com/anthropics/claude-code), [OpenCode](https://github.com/opencode-ai/opencode), and [Codex CLI](https://github.com/openai/codex) across ideation, coding, experiments, writing, and publication.
+> Semi-automated research assistant for academic research and software development. Supports [Claude Code](https://github.com/anthropics/claude-code), [Codex CLI](https://github.com/openai/codex), and [OpenCode](https://github.com/opencode-ai/opencode) across literature review, coding, experiments, reporting, writing, and project knowledge management.
 
-## News
+## Recent News
 
-- **2026-03-18**: **Results reporting workflow** — refocused `results-analysis` on strict statistics, real scientific figures, `stats-appendix` / `figure-catalog`, added the new `results-report` skill for post-experiment summary reports, and integrated internal experiment reports into Obsidian `Results/Reports/` with stable naming
-- **2026-03-17**: **Obsidian project knowledge base** — built-in official Obsidian skills + filesystem-first project import, conservative repo-bound auto-sync, default `Maps/literature.canvas`, optional `.base` views, and detach/archive/purge lifecycle (no MCP needed)
-- **2026-02-26**: **Zotero MCP Web API mode** — remote access, import papers via DOI/arXiv ID/URL, collection management, item updates, safe deletion; config guides for [Claude Code](./MCP_SETUP.md), [Codex CLI](./MCP_SETUP.md#codex-cli), [OpenCode](./MCP_SETUP.md#opencode)
-- **2026-02-25**: **Codex CLI** support — added `codex` branch supporting [OpenAI Codex CLI](https://github.com/openai/codex) with config.toml, 40 skills, 14 agents, and sandbox security
-- **2026-02-23**: Added `setup.sh` installer — backup-aware incremental updates for existing `~/.claude`, auto-backup `settings.json`, additive hooks/mcpServers/plugins merge
-- **2026-02-21**: **OpenCode** support — Claude Scholar now supports [OpenCode](https://github.com/opencode-ai/opencode) as an alternative CLI; switch to the `opencode` branch for OpenCode-compatible configuration
+- **2026-03-18**: **Results reporting workflow** — `results-analysis` now focuses on strict statistics, real scientific figures, `stats-appendix`, and `figure-catalog`; the new `results-report` skill handles post-experiment summary reports and writes internal reports into Obsidian `Results/Reports/` with stable naming.
+- **2026-03-17**: **Obsidian project knowledge base** — filesystem-first project knowledge base with project import, repo-bound auto-sync, `Papers / Experiments / Results / Results/Reports / Writing` routing, and no MCP requirement.
+- **2026-02-26**: **Zotero MCP Web API mode** — remote Zotero access, DOI/arXiv/URL import, collection management, item updates, and safer setup guidance across Claude Code, Codex CLI, and OpenCode.
 
 <details>
 <summary>View older changelog</summary>
 
+- **2026-02-25**: **Codex CLI** support — added `codex` branch supporting [OpenAI Codex CLI](https://github.com/openai/codex) with config.toml, 40 skills, 14 agents, and sandbox security
+- **2026-02-23**: Added `setup.sh` installer — backup-aware incremental updates for existing `~/.claude`, auto-backup `settings.json`, additive hooks/mcpServers/plugins merge
+- **2026-02-21**: **OpenCode** support — Claude Scholar now supports [OpenCode](https://github.com/opencode-ai/opencode) as an alternative CLI; switch to the `opencode` branch for OpenCode-compatible configuration
 - **2026-02-20**: Bilingual config — translated `CLAUDE.md` to English for international readability; added `CLAUDE.zh-CN.md` as Chinese backup; Chinese users can switch with `cp CLAUDE.zh-CN.md CLAUDE.md`
 - **2026-02-15**: Zotero MCP integration — added `/zotero-review` and `/zotero-notes` commands, updated `research-ideation` skill with Zotero integration guide, enhanced `literature-reviewer` agent with Zotero MCP support for automated paper import, collection management, full-text reading, and citation export
 - **2026-02-14**: Hooks optimization — restructured `security-guard` to two-tier system (Block + Confirm), `skill-forced-eval` now groups skills into 6 categories with silent scan mode, `session-start` limits display to top 5, `session-summary` adds 30-day log auto-cleanup, `stop-summary` shows separate added/modified/deleted counts; removed deprecated shell scripts (lib/common.sh, lib/platform.sh)
@@ -37,457 +37,51 @@
 
 </details>
 
-## Introduction
-
-Claude Scholar is a semi-automated research assistant for academic research and software development, providing rich skills, commands, agents, and hooks optimized for:
-- **Academic Research** - Complete research lifecycle: idea generation → experimentation → results analysis → paper writing → review response → conference preparation
-- **Software Development** - Git workflows, code review, test-driven development, ML project architecture
-- **Plugin Development** - Skill, Command, Agent, Hook development guides with quality assessment
-- **Project Management** - Planning documents, code standards, automated workflows with cross-platform hooks
-
 ## Quick Navigation
 
-| Topic | Description |
-|-------|-------------|
-| 🚀 [Quick Start](#quick-start) | Get up and running in minutes |
-| 📚 [Core Workflows](#core-workflows) | Paper writing, code organization, skill evolution |
-| 🛠️ [What's Included](#whats-included) | Skills, commands, agents overview |
-| 📖 [Installation Guide](#installation-options) | Full, minimal, or selective setup |
-| 📦 [MCP Setup](#mcp-setup) | Zotero MCP for research workflows |
-| 🧠 [Obsidian Setup](#obsidian-project-knowledge-base) | Built-in filesystem-first project knowledge base |
-| 🔧 [Project Rules](#project-rules) | Coding style and agent orchestration |
-
-## Core Workflows
-
-### Primary Workflows
-
-Complete academic research lifecycle - 7 stages from idea to publication.
-
-#### 1. Research Ideation (Zotero-Integrated)
-
-End-to-end research startup from idea generation to literature management:
-
-**Tools**: `research-ideation` skill + `literature-reviewer` agent + Zotero MCP
-
-**Process**:
-- **5W1H Brainstorming**: What, Why, Who, When, Where, How → structured thinking framework
-- **Literature Search & Import**: WebSearch finds papers → extract DOIs → auto-import to Zotero via `add_items_by_doi` → classify into themed sub-collections (Core Papers, Methods, Applications, Baselines, To-Read)
-- **PDF & Full-Text**: `find_and_attach_pdfs` batch-attaches open-access PDFs → `get_item_fulltext` reads full paper content for deep analysis (fallback: abstract + domain knowledge)
-- **Gap Analysis**: 5 types (Literature, Methodological, Application, Interdisciplinary, Temporal) → identify 2-3 concrete research opportunities
-- **Research Question**: SMART principles → formulate specific, measurable questions
-- **Method Selection & Planning**: Evaluate method applicability → timeline, milestones, risk assessment
-
-**Zotero Collection Structure**:
-```
-📁 Research-{Topic}-{YYYY-MM}
-  ├── 📁 Core Papers
-  ├── 📁 Methods
-  ├── 📁 Applications
-  ├── 📁 Baselines
-  └── 📁 To-Read
-```
-
-**Output**: `literature-review.md` + `research-proposal.md` + `references.bib` (exported from Zotero) + organized Zotero collection with PDFs
-
-**Commands**:
-- `/research-init "topic"` → full workflow: create Zotero collection → search & import papers → full-text analysis → gap analysis → generate review & proposal
-- `/zotero-review "collection"` → analyze an existing Zotero collection → generate literature review with comparison matrix
-- `/zotero-notes "collection"` → batch read papers → generate structured reading notes (summary/detailed/comparison formats)
-
-#### 2. ML Project Development
-
-Maintainable ML project structure for experiment code:
-
-**Tools**: `architecture-design` skill + `code-reviewer` agent + `git-workflow` skill
-
-**Process**:
-- **Structure**: Factory & Registry patterns → config-driven models (only `cfg` parameter) → enforced by `rules/coding-style.md`
-- **Code Style**: 200-400 line files → type hints required → `@dataclass(frozen=True)` for configs → max 3-level nesting
-- **Debug** (`bug-detective`): Error pattern matching for Python/Bash/JS → stack trace analysis → anti-pattern identification
-- **Git**: Conventional Commits (`feat/scope: message`) → branch strategy (master/develop/feature) → merge with `--no-ff`
-
-**Commands**: `/plan`, `/commit`, `/code-review`, `/tdd`
-
-#### 3. Experiment Analysis
-
-Statistical analysis and visualization of experimental results:
-
-**Tools**: `results-analysis` skill + `results-report` skill + `data-analyst` agent
-
-**Process**:
-- **Data Processing**: Automated cleaning and preprocessing of experiment logs
-- **Statistical Testing**: t-test, ANOVA, Wilcoxon signed-rank → validate significance
-- **Visualization**: strict scientific figure generation → publication-ready figures with interpretation guidance
-- **Ablation Studies**: Systematic component analysis → understand contribution of each part
-
-**Command**: `/analyze-results <experiment_dir>` → generates a strict analysis bundle (analysis report, stats appendix, figure catalog, figures)
-
-#### 4. Paper Writing
-
-Systematic paper writing from template to final draft:
-
-**Tools**: `ml-paper-writing` skill + `paper-miner` agent + `latex-conference-template-organizer` skill
-
-**Process**:
-- **Template Preparation**: Download conference .zip → extract main files → remove sample content → clean Overleaf-ready structure
-- **Citation Verification** (`citation-verification`): Multi-layer validation (Format → API → Information → Content) → prevents hallucinations
-- **Systematic Writing**: Narrative framing → 5-sentence abstract formula → section-by-section drafting with feedback cycles
-- **Anti-AI Processing** (`writing-anti-ai`): Remove inflated symbolism, promotional language, vague attributions → add human voice and rhythm → bilingual support (EN/CN)
-
-**Venues**: NeurIPS, ICML, ICLR, ACL, AAAI, COLM, Nature, Science, Cell, PNAS
-
-#### 5. Paper Self-Review
-
-Quality assurance before submission:
-
-**Tools**: `paper-self-review` skill
-
-**Process**:
-- **Structure Check**: Logical flow, section balance, narrative coherence
-- **Logic Validation**: Argument soundness, claim-evidence alignment, assumption clarity
-- **Citation Audit**: Reference accuracy, proper attribution, citation completeness
-- **Figure Quality**: Visual clarity, caption completeness, color accessibility
-- **Writing Polish**: Grammar, clarity, conciseness, academic tone
-- **Compliance**: Page limits, formatting requirements, ethical disclosures
-
-**6-item checklist** → systematic quality assessment
-
-#### 6. Submission & Rebuttal
-
-Paper submission and review response:
-
-**Tools**: `review-response` skill + `rebuttal-writer` agent
-
-**Submission Process**:
-- **Pre-submission**: Conference-specific checklists (NeurIPS 16-item, ICML Broader Impact, ICLR LLM disclosure)
-- **Format Check**: Page limits, anonymization, supplementary materials
-- **Final Review**: Proofread, check references, verify figures
-
-**Rebuttal Process**:
-- **Review Analysis**: Parse and classify comments (Major/Minor/Typo/Misunderstanding)
-- **Response Strategy**: Accept/Defend/Clarify/Experiment → tailored approach per comment type
-- **Rebuttal Writing**: Structured response with evidence and reasoning
-- **Tone Management**: Professional, respectful, evidence-based language
-
-**Command**: `/rebuttal <review_file>` → generates complete rebuttal document with experiment plan
-
-#### 7. Post-Acceptance Processing
-
-Conference preparation and research promotion:
-
-**Tools**: `post-acceptance` skill
-
-**Process**:
-- **Presentation**: Slide creation guidance (15/20/30 min formats) → visual design principles → storytelling structure
-- **Poster**: Academic poster templates (A0/A1 sizes) → layout optimization → visual hierarchy
-- **Promotion**: Social media content (Twitter/X, LinkedIn) → blog posts → press releases → research summaries
-
-**Commands**: `/presentation`, `/poster`, `/promote` → automated content generation
-
-**Coverage**: 90% of academic research lifecycle (from idea to publication)
-
-### Supporting Workflows
-
-These workflows run in the background to enhance the primary workflows.
-
-#### Automated Enforcement Workflow
-
-Cross-platform hooks (Node.js) automate workflow enforcement:
-
-```
-Session Start → Skill Evaluation → Session End → Session Stop
-```
-
-- **skill-forced-eval** (`skill-forced-eval.js`): Before EVERY user prompt → groups all available skills (local + plugins) into 6 categories → silent scan mode, only outputs matched skills → additionally hints `obsidian-project-memory` / literature bridge flow inside bound research repos → requires activation before implementation
-- **session-start** (`session-start.js`): Session begins → displays Git status, pending todos, available commands (top 5 with fold count), package manager, and bound Obsidian project-memory status → shows project context at a glance
-- **session-summary** (`session-summary.js`): Session ends → generates comprehensive work log → summarizes all changes made → provides smart recommendations for next steps → reminds minimum Obsidian write-back for bound repos → auto-cleans logs older than 30 days
-- **stop-summary** (`stop-summary.js`): Session stops → quick status check with separate added/modified/deleted counts → groups temp files by folder (top 3 per folder) → reminds minimum Obsidian maintenance for bound repos
-- **security-guard** (`security-guard.js`): Two-tier security system — **Block tier**: immediately rejects catastrophic commands (rm -rf /, dd, mkfs, system dirs); **Confirm tier**: injects systemMessage forcing model to ask user before executing dangerous-but-legitimate operations (git push --force, git reset --hard, chmod 777, SQL DROP/DELETE/TRUNCATE, sensitive file writes)
-
-**Cross-platform**: All hooks use Node.js (not shell scripts) ensuring Windows/macOS/Linux compatibility.
-
-#### Knowledge Extraction Workflow
-
-Two specialized mining agents continuously extract knowledge to improve skills:
-
-- **paper-miner** (agent): Analyze research papers (PDF/DOCX/arXiv links) → extracts writing patterns, structure insights, venue requirements, rebuttal strategies → updates `ml-paper-writing/references/knowledge/` with categorized entries (structure.md, writing-techniques.md, submission-guides.md, review-response.md)
-- **kaggle-miner** (agent): Study winning Kaggle competition solutions → extract competition briefs, front-runner detailed technical analysis, code templates, best practices → update the `kaggle-learner` skill's knowledge base (`references/knowledge/[domain]/` directories, categorized by NLP/CV/Time Series/Tabular/Multimodal)
-
-**Knowledge feedback loop**: Each paper or solution analyzed enriches the knowledge base, creating a self-improving system that evolves with your research.
-
-#### Skill Evolution System
-
-3-step continuous improvement cycle for maintaining and improving skills:
-
-```
-skill-development → skill-quality-reviewer → skill-improver
-```
-
-1. **Develop** (`skill-development`): Create skills with proper YAML frontmatter → clear descriptions with trigger phrases → progressive disclosure (lean SKILL.md, details in `references/`)
-2. **Review** (`skill-quality-reviewer`): 4-dimension quality assessment → Description Quality (25%), Content Organization (30%), Writing Style (20%), Structural Integrity (25%) → generates improvement plan with prioritized fixes
-3. **Improve** (`skill-improver`): Merges suggested changes → updates documentation → iterates on feedback → reads improvement plans and applies changes automatically
-
-## File Structure
-
-<details>
-<summary>View file structure</summary>
-
-```
-claude-scholar/
-├── hooks/               # Cross-platform JavaScript hooks (automated enforcement)
-│   ├── hook-common.js           # Shared utilities (git diff, change analysis)
-│   ├── session-start.js         # Session begin - Git status, todos, top 5 commands
-│   ├── skill-forced-eval.js     # Silent scan, 6-category skill grouping
-│   ├── session-summary.js       # Session end - work log, 30-day log auto-cleanup
-│   ├── stop-summary.js          # Session stop - added/modified/deleted counts, grouped temp files
-│   └── security-guard.js        # Two-tier security: Block (catastrophic) + Confirm (dangerous)
-│
-├── skills/              # 44 specialized skills (domain knowledge + workflows, including built-in Obsidian KB)
-│   ├── ml-paper-writing/        # Full paper writing: NeurIPS, ICML, ICLR, ACL, AAAI, COLM
-│   │   └── references/
-│   │       └── knowledge/        # Extracted patterns from successful papers
-│   │       ├── structure.md           # Paper organization patterns
-│   │       ├── writing-techniques.md  # Sentence templates, transitions
-│   │       ├── submission-guides.md   # Venue requirements (page limits, etc.)
-│   │       └── review-response.md     # Rebuttal strategies
-│   │
-│   ├── research-ideation/        # Research startup: 5W1H, literature review, gap analysis
-│   │   └── references/
-│   │       ├── 5w1h-framework.md           # Systematic thinking tool
-│   │       ├── gap-analysis-guide.md       # 5 types of research gaps
-│   │       ├── literature-search-strategies.md
-│   │       ├── research-question-formulation.md
-│   │       ├── method-selection-guide.md
-│   │       └── research-planning.md
-│   │
-│   ├── results-analysis/         # Strict experiment analysis: statistics, figures, ablation
-│   │   └── references/
-│   │       ├── statistical-methods.md      # t-test, ANOVA, Wilcoxon
-│   │       ├── statistical-reporting.md    # reporting completeness
-│   │       ├── figure-interpretation.md    # explain figures with evidence
-│   │       └── common-pitfalls.md          # Common analysis mistakes
-│   │
-│   ├── results-report/           # Post-experiment summary reports and retrospectives
-│   │   └── references/
-│   │       ├── report-structure.md
-│   │       ├── report-naming.md
-│   │       └── decision-oriented-analysis.md
-│   │
-│   ├── review-response/          # Systematic rebuttal writing
-│   │   └── references/
-│   │       ├── review-classification.md    # Major/Minor/Typo/Misunderstanding
-│   │       ├── response-strategies.md      # Accept/Defend/Clarify/Experiment
-│   │       ├── rebuttal-templates.md       # Structured response templates
-│   │       └── tone-guidelines.md          # Professional language
-│   │
-│   ├── paper-self-review/        # 6-item quality checklist
-│   ├── post-acceptance/          # Conference preparation
-│   │   └── references/
-│   │       ├── presentation-templates/     # Slide creation (15/20/30 min)
-│   │       ├── poster-templates/           # Academic poster design
-│   │       ├── promotion-examples/         # Social media content
-│   │       └── design-guidelines.md        # Visual design principles
-│   │
-│   ├── citation-verification/    # Multi-layer citation validation
-│   ├── writing-anti-ai/         # Remove AI patterns: symbolism, promotional language
-│   │   └── references/
-│   │       ├── patterns-english.md    # English AI patterns to remove
-│   │       └── patterns-chinese.md     # Chinese AI patterns to remove
-│   │
-│   ├── architecture-design/     # ML project patterns: Factory, Registry, Config-driven
-│   ├── git-workflow/            # Git discipline: Conventional Commits, branching
-│   ├── bug-detective/           # Debugging: Python, Bash, JS/TS error patterns
-│   ├── code-review-excellence/  # Code review: security, performance, maintainability
-│   ├── skill-development/       # Skill creation: YAML, progressive disclosure
-│   ├── skill-quality-reviewer/  # Skill assessment: 4-dimension scoring
-│   ├── skill-improver/          # Skill evolution: merge improvements
-│   ├── kaggle-learner/          # Learn from Kaggle winning solutions
-│   ├── doc-coauthoring/         # Document collaboration workflow
-│   ├── latex-conference-template-organizer  # Template cleanup for Overleaf
-│   └── ... (10+ more skills)
-│
-├── commands/            # 50+ slash commands (quick workflow execution)
-│   ├── research-init.md         # Launch research startup workflow
-│   ├── obsidian-init.md         # Bootstrap/import an Obsidian project knowledge base
-│   ├── obsidian-ingest.md       # Ingest new Markdown into the project knowledge base
-│   ├── obsidian-review.md       # Generate literature synthesis from project notes
-│   ├── obsidian-notes.md        # Normalize project paper notes
-│   ├── obsidian-note.md         # Archive/purge/rename a canonical note
-│   ├── obsidian-sync.md         # Force repo↔memory↔vault sync
-│   ├── obsidian-link.md         # Rebuild project wikilinks and graph
-│   ├── obsidian-project.md      # Detach/archive/purge/rebuild project knowledge
-│   ├── obsidian-views.md        # Explicitly generate optional Views/*.base
-│   ├── zotero-review.md         # Read Zotero papers, generate literature review
-│   ├── zotero-notes.md          # Batch read Zotero papers, generate reading notes
-│   ├── analyze-results.md       # Analyze experiment results
-│   ├── rebuttal.md              # Generate systematic rebuttal document
-│   ├── presentation.md          # Create conference presentation outline
-│   ├── poster.md                # Generate academic poster design plan
-│   ├── promote.md               # Generate promotion content
-│   ├── plan.md                  # Implementation planning with agent delegation
-│   ├── commit.md                # Conventional Commits: feat/fix/docs/refactor
-│   ├── code-review.md           # Quality and security review workflow
-│   ├── tdd.md                   # Test-driven development: Red-Green-Refactor
-│   ├── build-fix.md             # Fix build errors automatically
-│   ├── verify.md                # Run verification loops
-│   ├── checkpoint.md            # Save verification state
-│   ├── refactor-clean.md        # Remove dead code
-│   ├── learn.md                 # Extract patterns from code
-│   ├── update-github.md         # Commit and push to GitHub
-│   ├── update-readme.md         # Update README documentation
-│   ├── update-memory.md         # Check and update CLAUDE.md memory
-│   ├── create_project.md        # Create new project from template
-│   ├── setup-pm.md              # Configure package manager (uv/pnpm)
-│   └── sc/                      # SuperClaude command suite (30 commands)
-│       ├── sc-agent.md           # Agent management
-│       ├── sc-estimate.md       # Development time estimation
-│       ├── sc-improve.md         # Code improvement
-│       └── ...
-│
-├── agents/              # 15 specialized agents (focused task delegation)
-│   ├── literature-reviewer.md   # Literature search and trend analysis
-│   ├── literature-reviewer-obsidian.md  # Literature review from project knowledge base
-│   ├── research-knowledge-curator-obsidian.md  # Default Obsidian project curator
-│   ├── data-analyst.md          # Automated data analysis and visualization
-│   ├── rebuttal-writer.md       # Systematic rebuttal writing
-│   ├── paper-miner.md           # Extract paper knowledge: structure, techniques
-│   ├── architect.md             # System design: architecture decisions
-│   ├── code-reviewer.md         # Review code: quality, security, best practices
-│   ├── tdd-guide.md             # Guide TDD: test-first development
-│   ├── kaggle-miner.md          # Extract engineering practices from Kaggle
-│   ├── build-error-resolver.md  # Fix build errors: analyze and resolve
-│   ├── refactor-cleaner.md      # Remove dead code: detect and cleanup
-│   ├── bug-analyzer.md          # Deep code execution flow analysis and root cause investigation
-│   ├── dev-planner.md           # Implementation planning and task breakdown
-│   ├── ui-sketcher.md           # UI blueprint design and interaction specs
-│   └── story-generator.md       # User story and requirement generation
-│
-├── rules/               # Global guidelines (always-follow constraints)
-│   ├── coding-style.md          # ML project standards: file size, immutability, types
-│   ├── agents.md                # Agent orchestration: when to delegate, parallel execution
-│   ├── security.md              # Secrets management, sensitive file protection
-│   └── experiment-reproducibility.md  # Random seeds, config recording, checkpoints
-│
-├── CLAUDE.md            # Global configuration: project overview, preferences, rules
-│
-└── README.md            # This file - overview, installation, features
-```
-
-</details>
-
-## Feature Highlights
-
-### Skills (32 total)
-
-**Web Design:**
-- `frontend-design` - Create distinctive, production-grade frontend interfaces
-- `ui-ux-pro-max` - UI/UX design intelligence (50+ styles, 97 palettes, 9 stacks)
-- `web-design-reviewer` - Visual inspection and design issue fixing
-
-**Writing & Academic:**
-- `ml-paper-writing` - Full paper writing guidance for top conferences/journals
-- `writing-anti-ai` - Remove AI writing patterns (bilingual support)
-- `doc-coauthoring` - Structured document collaboration workflow
-- `latex-conference-template-organizer` - LaTeX template management
-- `daily-paper-generator` - Automated daily paper generation for research tracking
-
-**Research Workflow:**
-- `research-ideation` - Research startup: 5W1H brainstorming, literature review, gap analysis
-- `results-analysis` - Strict experiment analysis: rigorous statistics, scientific figures, ablation studies
-- `results-report` - Post-experiment summary reports: retrospection, decision support, Obsidian report notes
-- `review-response` - Systematic rebuttal writing with tone management
-- `paper-self-review` - 6-item quality checklist for paper self-assessment
-- `post-acceptance` - Conference preparation: presentations, posters, promotion
-- `citation-verification` - Multi-layer citation validation to prevent hallucinations
-
-**Development:**
-- `daily-coding` - Daily coding checklist (minimal, auto-triggered)
-- `git-workflow` - Git best practices (Conventional Commits, branching)
-- `code-review-excellence` - Code review guidelines
-- `bug-detective` - Debugging for Python, Bash, JS/TS
-- `architecture-design` - ML project design patterns
-- `verification-loop` - Testing and validation
-
-**Plugin Development:**
-- `skill-development` - Skill creation guide
-- `skill-improver` - Skill improvement tools
-- `skill-quality-reviewer` - Quality assessment
-- `command-development` - Slash command creation
-- `agent-identifier` - Agent configuration
-- `hook-development` - Hook development guide
-- `mcp-integration` - MCP server integration
-
-**Utilities:**
-- `uv-package-manager` - Modern Python package management
-- `planning-with-files` - Markdown-based planning
-- `webapp-testing` - Local web application testing
-- `kaggle-learner` - Learn from Kaggle solutions
-
-### Commands (50+)
-
-**Research Commands:**
-| Command | Purpose |
-|---------|---------|
-| `/research-init` | Launch research startup workflow (5W1H, literature review, gap analysis) |
-| `/zotero-review` | Read papers from Zotero collection, synthesize into Obsidian literature review and downstream project notes |
-| `/zotero-notes` | Batch read Zotero papers, create/update detailed Obsidian paper notes and refresh `Maps/literature.canvas` |
-| `/obsidian-ingest` | Ingest a new Markdown file or directory via classify -> promote / merge / stage-to-daily |
-| `/obsidian-note` | Archive, purge, or rename a single canonical note |
-| `/obsidian-views` | Explicitly generate optional `.base` views and extra canvases |
-| `/analyze-results` | Analyze experiment results (statistics, visualization, ablation) |
-| `/rebuttal` | Generate systematic rebuttal document from review comments |
-| `/presentation` | Create conference presentation outline |
-| `/poster` | Generate academic poster design plan |
-| `/promote` | Generate promotion content (Twitter, LinkedIn, blog) |
-
-**Development Commands:**
-| Command | Purpose |
-|---------|---------|
-| `/plan` | Create implementation plans |
-| `/commit` | Commit with Conventional Commits |
-| `/update-github` | Commit and push to GitHub |
-| `/update-readme` | Update README documentation |
-| `/update-memory` | Check and update CLAUDE.md memory |
-| `/code-review` | Perform code review |
-| `/tdd` | Test-driven development workflow |
-| `/build-fix` | Fix build errors |
-| `/verify` | Verify changes |
-| `/checkpoint` | Create checkpoints |
-| `/refactor-clean` | Refactor and cleanup |
-| `/learn` | Extract reusable patterns |
-| `/create_project` | Create new project from template |
-| `/setup-pm` | Configure package manager (uv/pnpm) |
-| `/sc` | SuperClaude command suite (30 commands) |
-
-### Agents (14 specialized)
-
-**Research Agents:**
-- **literature-reviewer** - Literature search, classification, and trend analysis
-- **data-analyst** - Automated data analysis and visualization
-- **rebuttal-writer** - Systematic rebuttal writing with tone optimization
-- **paper-miner** - Extract paper writing knowledge from successful publications
-
-**Development Agents:**
-- **architect** - System architecture design
-- **build-error-resolver** - Fix build errors
-- **code-reviewer** - Review code quality
-- **refactor-cleaner** - Remove dead code
-- **tdd-guide** - Guide TDD workflow
-- **kaggle-miner** - Extract Kaggle engineering practices
-- **bug-analyzer** - Deep code execution flow analysis and root cause investigation
-- **dev-planner** - Implementation planning and task breakdown
-
-**Design & Content Agents:**
-- **ui-sketcher** - UI blueprint design and interaction specs
-- **story-generator** - User story and requirement generation
+| Section | What it helps with |
+|---|---|
+| [Why Claude Scholar](#why-claude-scholar) | Understand the project positioning and target use cases. |
+| [Core Workflow](#core-workflow) | See the end-to-end research pipeline from ideation to publication. |
+| [Quick Start](#quick-start) | Install Claude Scholar in full, minimal, or selective mode. |
+| [Integrations](#integrations) | Learn how Zotero and Obsidian fit into the workflow. |
+| [Primary Workflows](#primary-workflows) | Browse the main research and development workflows. |
+| [Supporting Workflows](#supporting-workflows) | See the background systems that strengthen the main workflow. |
+| [Documentation](#documentation) | Jump to setup docs, configuration, and templates. |
+| [Citation](#citation) | Cite Claude Scholar in papers, reports, or project docs. |
+
+## Why Claude Scholar
+
+Claude Scholar is **not** an end-to-end autonomous research system that tries to replace the researcher.
+
+Its core idea is simple:
+
+> **human decision-making stays at the center; the assistant accelerates the workflow around it.**
+
+That means Claude Scholar is designed to help with the heavy, repetitive, and structure-sensitive parts of research — literature organization, note-taking, experiment analysis, reporting, and writing support — while still keeping the key judgments in human hands:
+
+- which problem is worth pursuing,
+- which papers actually matter,
+- which hypotheses are worth testing,
+- which results are convincing,
+- and what should be written, submitted, or abandoned.
+
+In other words, Claude Scholar is a **semi-automated research assistant**, not a “fully automated scientist.”
+
+## Core Workflow
+
+- **Ideation**: turn a vague topic into concrete questions, research gaps, and an initial plan.
+- **Literature**: search, import, organize, and read papers through Zotero collections.
+- **Paper notes**: convert papers into structured reading notes and reusable claims.
+- **Knowledge base**: route durable knowledge into Obsidian across `Papers / Knowledge / Experiments / Results / Results/Reports / Writing`.
+- **Experiments**: track hypotheses, experiment lines, run history, findings, and next actions.
+- **Analysis**: generate strict statistics, real scientific figures, and analysis artifacts with `results-analysis`.
+- **Reporting**: produce a complete post-experiment report with `results-report`, then write it back into Obsidian.
+- **Writing and publication**: carry stable findings into literature reviews, papers, rebuttals, slides, posters, and promotion.
 
 ## Quick Start
 
-### Installation Options
-
-Choose the installation method that fits your needs:
-
-#### Option 1: Full Installation (Recommended)
+### Option 1: Full Installation (Recommended)
 
 ```bash
 git clone https://github.com/Galaxy-Dawn/claude-scholar.git /tmp/claude-scholar
@@ -496,12 +90,12 @@ bash /tmp/claude-scholar/scripts/setup.sh
 
 The installer is **backup-aware and incremental-update friendly**:
 - updates repo-managed `skills/commands/agents/rules/hooks/scripts/CLAUDE*.md`,
-- backs up any overwritten files to `~/.claude/.claude-scholar-backups/<timestamp>/`,
-- also backs up `settings.json` to `settings.json.bak`,
-- **preserves** your existing `env`, model/provider settings, API keys, permissions, and existing `mcpServers` values,
-- **adds missing** hook entries instead of replacing the whole hook set.
+- backs up overwritten files to `~/.claude/.claude-scholar-backups/<timestamp>/`,
+- backs up `settings.json` to `settings.json.bak`,
+- preserves your existing `env`, model/provider settings, API keys, permissions, and current `mcpServers` values,
+- adds missing hook entries instead of replacing your entire hook set.
 
-To update later, rerun the same installer after pulling the latest repo:
+To update later:
 
 ```bash
 cd /tmp/claude-scholar
@@ -509,17 +103,12 @@ git pull --ff-only
 bash scripts/setup.sh
 ```
 
-**Includes**: 47 skills, 32 top-level commands, 16 agents, 5 hooks, and project rules.
+### Option 2: Minimal Installation
 
-#### Option 2: Minimal Installation
-
-Core hooks and essential skills only (faster load, less complexity):
+Install only a small research-focused subset:
 
 ```bash
-# Clone repository
 git clone https://github.com/Galaxy-Dawn/claude-scholar.git /tmp/claude-scholar
-
-# Copy only hooks and core skills
 mkdir -p ~/.claude/hooks ~/.claude/skills
 cp /tmp/claude-scholar/hooks/*.js ~/.claude/hooks/
 cp -r /tmp/claude-scholar/skills/ml-paper-writing ~/.claude/skills/
@@ -530,156 +119,317 @@ cp -r /tmp/claude-scholar/skills/review-response ~/.claude/skills/
 cp -r /tmp/claude-scholar/skills/writing-anti-ai ~/.claude/skills/
 cp -r /tmp/claude-scholar/skills/git-workflow ~/.claude/skills/
 cp -r /tmp/claude-scholar/skills/bug-detective ~/.claude/skills/
-
-# Cleanup
-rm -rf /tmp/claude-scholar
 ```
 
-**Post-install**: Minimal/manual install does **not** auto-merge `settings.json`; copy only the hooks entries you want from `settings.json.template`.
+**Post-install**: minimal/manual install does **not** auto-merge `settings.json`; copy only the hooks or MCP entries you want from `settings.json.template`.
 
-**Includes**: 5 hooks, 8 core skills (complete research workflow + essential development).
+### Option 3: Selective Installation
 
-#### Option 3: Selective Installation
-
-Pick and choose specific components:
+Copy only the parts you need:
 
 ```bash
-# Clone repository
 git clone https://github.com/Galaxy-Dawn/claude-scholar.git /tmp/claude-scholar
 cd /tmp/claude-scholar
 
-# Copy what you need, for example:
-# - Hooks only
 cp hooks/*.js ~/.claude/hooks/
-
-# - Specific skills
 cp -r skills/latex-conference-template-organizer ~/.claude/skills/
 cp -r skills/architecture-design ~/.claude/skills/
-
-# - Specific agents
 cp agents/paper-miner.md ~/.claude/agents/
-
-# - Project rules
 cp rules/coding-style.md ~/.claude/rules/
 cp rules/agents.md ~/.claude/rules/
 ```
 
-**Post-install**: Selective/manual install does **not** auto-merge `settings.json`; copy only the hooks or MCP entries you actually want from `settings.json.template`.
+**Post-install**: selective/manual install does **not** auto-merge `settings.json`; copy only the hooks or MCP entries you actually want from `settings.json.template`.
 
-**Recommended for**: Advanced users who want custom configurations.
+## Platform Support
 
-### Requirements
+Claude Scholar is maintained for:
 
-- Claude Code CLI
-- Git
-- Node.js (required for hooks)
-- uv, Python (for Python development)
-- **Zotero** (for Zotero MCP features)
-- **Obsidian** (optional UI/CLI layer for the built-in project knowledge base)
+- **Claude Code** — the primary installation target.
+- **Codex CLI** — supported workflow and documentation are available in this repo ecosystem.
+- **OpenCode** — supported as an alternative CLI workflow.
 
-### MCP Setup
+The top-level workflow is the same: research, coding, experiments, reporting, and project knowledge management.
 
-See [MCP_SETUP.md](./MCP_SETUP.md) for Zotero/browser MCP setup and [OBSIDIAN_SETUP.md](./OBSIDIAN_SETUP.md) for the built-in Obsidian knowledge base workflow.
+## Integrations
 
-#### Zotero MCP (Zotero-integrated workflows)
+### Zotero
 
-Install the MCP server:
+Use Zotero when you want Claude Scholar to help with:
+- paper import via DOI / arXiv / URL,
+- collection-based reading workflows,
+- full-text access through Zotero MCP,
+- detailed paper notes and literature synthesis.
 
-```bash
-# Install from Galaxy-Dawn fork (Web API mode)
-uv tool install git+https://github.com/Galaxy-Dawn/zotero-mcp.git
-```
+See [MCP_SETUP.md](./MCP_SETUP.md).
 
-Then add to your `~/.claude/settings.json`:
+### Obsidian
 
-```json
-{
-  "mcpServers": {
-    "zotero": {
-      "command": "zotero-mcp",
-      "args": ["serve"],
-      "env": {
-        "ZOTERO_API_KEY": "your-api-key",
-        "ZOTERO_LIBRARY_ID": "your-library-id",
-        "ZOTERO_LIBRARY_TYPE": "user",
-        "UNPAYWALL_EMAIL": "your-email@example.com",
-        "UNSAFE_OPERATIONS": "all"
-      }
-    }
-  }
-}
-```
+Use Obsidian when you want Claude Scholar to maintain a filesystem-first research knowledge base:
+- `Papers/`
+- `Experiments/`
+- `Results/`
+- `Results/Reports/`
+- `Writing/`
+- `Daily/`
 
-## Obsidian Project Knowledge Base
+See [OBSIDIAN_SETUP.md](./OBSIDIAN_SETUP.md).
 
-Claude Scholar now includes a built-in Obsidian project knowledge base with no MCP requirement. See [OBSIDIAN_SETUP.md](./OBSIDIAN_SETUP.md).
+## Primary Workflows
 
-Default literature graph artifact: `Maps/literature.canvas`  
-Optional views: explicit-only via `/obsidian-views`
+Complete academic research lifecycle — 7 stages from idea to publication.
 
-Main commands:
+### 1. Research Ideation (Zotero-Integrated)
 
-- `/obsidian-init`
-- `/obsidian-ingest`
-- `/obsidian-sync`
-- `/obsidian-link`
-- `/obsidian-review`
-- `/obsidian-notes`
-- `/obsidian-note`
-- `/obsidian-project`
-- `/obsidian-views`
+End-to-end research startup from idea generation to literature management.
 
-### First Run
+| Type | Name | One-line explanation |
+|---|---|---|
+| Skill | `research-ideation` | Turn vague topics into structured questions, gap analysis, and an initial research plan. |
+| Agent | `literature-reviewer` | Search, classify, and synthesize papers into an actionable literature picture. |
+| Command | `/research-init` | Start a new topic from literature search to Zotero organization and proposal drafting. |
+| Command | `/zotero-review` | Review an existing Zotero collection and generate a structured literature synthesis. |
+| Command | `/zotero-notes` | Batch-read a Zotero collection and create structured paper reading notes. |
 
-After installation, the hooks provide automated workflow assistance:
+**How it works**
+- **5W1H Brainstorming**: turn a vague topic into structured questions (`What / Why / Who / When / Where / How`).
+- **Literature Search & Import**: search papers, extract DOI/arXiv/URLs, import them into Zotero, and organize them into themed collections.
+- **PDF & Full Text**: attach PDFs when available, read full text when possible, and fall back to abstract-level analysis when necessary.
+- **Gap Analysis**: identify literature, methodological, application, interdisciplinary, or temporal gaps.
+- **Research Question & Planning**: convert the review into concrete questions, initial hypotheses, and next-step planning.
 
-1. **Every prompt** triggers `skill-forced-eval` → ensures applicable skills are considered and bound research repos get the right Obsidian skill hints
-2. **Session starts** with `session-start` → displays project context and bound project-memory status
-3. **Sessions end** with `session-summary` → generates work log with recommendations and minimum Obsidian write-back reminders
-4. **Session stops** with `stop-summary` → provides status check and lightweight bound-repo maintenance reminders
+**Typical output**
+- literature review notes
+- structured Zotero collection
+- project proposal / research direction draft
+
+### 2. ML Project Development
+
+Maintainable ML project structure for experiment code and iteration.
+
+| Type | Name | One-line explanation |
+|---|---|---|
+| Skill | `architecture-design` | Define maintainable ML project structure when new registrable components or modules are introduced. |
+| Skill | `git-workflow` | Enforce branch hygiene, commit conventions, and safer collaboration workflows. |
+| Skill | `bug-detective` | Debug stack traces, shell failures, and code-path issues systematically. |
+| Agent | `code-reviewer` | Review modified code for correctness, maintainability, and implementation quality. |
+| Agent | `dev-planner` | Break complex engineering work into concrete implementation steps. |
+| Command | `/plan` | Create or refine an implementation plan before coding. |
+| Command | `/commit` | Prepare a conventional commit for the current changes. |
+| Command | `/code-review` | Run a focused review on the current code changes. |
+| Command | `/tdd` | Drive feature work through small, test-backed implementation steps. |
+
+**How it works**
+- **Structure**: use Factory / Registry patterns for new ML components when appropriate.
+- **Code Quality**: keep files maintainable, typed, and config-driven.
+- **Debugging**: inspect stack traces, shell failures, and code-path issues systematically.
+- **Git Discipline**: use branch hygiene, conventional commits, and safer merge/rebase workflows.
+
+### 3. Experiment Analysis
+
+Strict analysis of experimental results with scientific figures and report-ready artifacts.
+
+| Type | Name | One-line explanation |
+|---|---|---|
+| Skill | `results-analysis` | Produce a strict analysis bundle with rigorous statistics, real scientific figures, and analysis artifacts. |
+| Skill | `results-report` | Turn analysis artifacts into a complete post-experiment report with decisions, limitations, and next actions. |
+| Command | `/analyze-results` | Run the full experiment workflow in one shot: strict analysis first, then final report generation. |
+
+**How it works**
+- **Data Processing**: read experiment logs, metrics files, and result directories.
+- **Statistical Testing**: run strict statistical checks such as t-test / ANOVA / Wilcoxon where appropriate.
+- **Visualization**: generate real scientific figures with interpretation guidance, not just vague plotting suggestions.
+- **Ablation & Comparison**: analyze component contribution, performance tradeoffs, and stability.
+- **Post-Experiment Reporting**: turn the analysis bundle into a full retrospective report with conclusions, limitations, and next actions.
+
+**Typical output**
+- `analysis-report.md`
+- `stats-appendix.md`
+- `figure-catalog.md`
+- `figures/`
+- post-experiment summary report in Obsidian `Results/Reports/`
+
+### 4. Paper Writing
+
+Systematic academic writing from structure setup to draft refinement.
+
+| Type | Name | One-line explanation |
+|---|---|---|
+| Skill | `ml-paper-writing` | Draft publication-oriented ML/AI papers from repo context, evidence, and literature. |
+| Skill | `citation-verification` | Check references, metadata, and claim-citation alignment to prevent citation mistakes. |
+| Skill | `writing-anti-ai` | Reduce robotic phrasing and improve clarity, rhythm, and human academic tone. |
+| Skill | `latex-conference-template-organizer` | Clean messy conference templates into an Overleaf-ready writing structure. |
+| Agent | `paper-miner` | Mine strong papers for reusable writing patterns, structure, and venue expectations. |
+
+**How it works**
+- **Template Preparation**: clean conference templates into an Overleaf-ready structure.
+- **Citation Verification**: verify references, metadata, and claim-citation alignment.
+- **Systematic Writing**: draft sections from repo context, experiment evidence, and literature notes.
+- **Style Refinement**: reduce robotic phrasing and improve rhythm, clarity, and tone.
+
+### 5. Paper Self-Review
+
+Quality assurance before submission.
+
+| Type | Name | One-line explanation |
+|---|---|---|
+| Skill | `paper-self-review` | Audit structure, logic, citations, figures, and compliance before submission. |
+
+**How it works**
+- **Structure Check**: logical flow, section balance, and narrative coherence.
+- **Logic Validation**: claim-evidence alignment, assumption clarity, and argument consistency.
+- **Citation Audit**: reference correctness and completeness.
+- **Figure Quality**: caption completeness, readability, and accessibility.
+- **Compliance**: page limits, formatting, and disclosure requirements.
+
+### 6. Submission & Rebuttal
+
+Submission preparation and review response workflow.
+
+| Type | Name | One-line explanation |
+|---|---|---|
+| Skill | `review-response` | Structure reviewer comments into an evidence-based rebuttal workflow. |
+| Agent | `rebuttal-writer` | Draft professional, respectful, and strategically organized rebuttal text. |
+| Command | `/rebuttal` | Generate a complete rebuttal draft from review comments and evidence. |
+
+**How it works**
+- **Pre-submission Checks**: venue-specific formatting, anonymization, and checklist requirements.
+- **Review Analysis**: classify reviewer comments into actionable categories.
+- **Response Strategy**: decide whether to accept, defend, clarify, or propose new experiments.
+- **Rebuttal Writing**: generate structured, evidence-based responses with professional tone.
+
+### 7. Post-Acceptance Processing
+
+Conference preparation and research promotion after acceptance.
+
+| Type | Name | One-line explanation |
+|---|---|---|
+| Skill | `post-acceptance` | Support talks, posters, and research promotion after acceptance. |
+| Command | `/presentation` | Generate presentation structure and speaking guidance for the accepted work. |
+| Command | `/poster` | Organize the work into poster-ready content and layout guidance. |
+| Command | `/promote` | Draft public-facing promotion content such as summaries, posts, or threads. |
+
+**How it works**
+- **Presentation**: prepare talk structure and slide guidance.
+- **Poster**: organize content into poster-ready layout and hierarchy.
+- **Promotion**: generate social media, blog, or summary material for broader communication.
+
+## Supporting Workflows
+
+These workflows run in the background to strengthen the primary workflows.
+
+### Obsidian Project Knowledge Base
+
+Use Obsidian as the durable sink for project knowledge, not just as a note dump.
+
+| Type | Name | One-line explanation |
+|---|---|---|
+| Skill | `obsidian-project-memory` | Maintain the project-level Obsidian knowledge base and decide what durable knowledge should be written back. |
+| Skill | `obsidian-project-bootstrap` | Initialize an Obsidian knowledge base for a new or existing research project. |
+| Skill | `obsidian-research-log` | Record daily research progress, plans, ideas, and TODOs into the knowledge base. |
+| Skill | `obsidian-experiment-log` | Capture experiment setup, run history, outcomes, and follow-up actions in Obsidian. |
+| Command | `/obsidian-ingest` | Ingest a new Markdown file or folder into the correct place in the knowledge base. |
+| Command | `/obsidian-note` | Manage a single note lifecycle such as lookup, rename, archive, or purge. |
+| Command | `/obsidian-views` | Generate or refresh optional Obsidian views such as `.base` files. |
+
+**How it works**
+- bind an existing repo to an Obsidian vault,
+- route stable knowledge into `Papers / Experiments / Results / Results/Reports / Writing`,
+- keep `Daily/` and project memory updated conservatively,
+- ingest new Markdown files into the correct canonical destination,
+- optionally generate extra views and canvases.
+
+### Automated Enforcement Workflow
+
+Cross-platform hooks automate routine workflow checks and reminders.
+
+**Hooks**
+- `skill-forced-eval.js`
+- `session-start.js`
+- `session-summary.js`
+- `stop-summary.js`
+- `security-guard.js`
+
+**How it works**
+- **Before prompts**: evaluate applicable skills and surface relevant workflow hints.
+- **At session start**: show Git state, available commands, and project-memory context.
+- **At session end/stop**: summarize work and remind the user about minimum maintenance tasks.
+- **Security**: block catastrophic commands and require confirmation for dangerous but legitimate ones.
+
+### Knowledge Extraction Workflow
+
+Specialized agents can mine reusable knowledge from papers and competitions.
+
+| Type | Name | One-line explanation |
+|---|---|---|
+| Agent | `paper-miner` | Extract reusable writing knowledge, structure patterns, and venue heuristics from strong papers. |
+| Agent | `kaggle-miner` | Extract engineering practices and solution patterns from strong Kaggle workflows. |
+
+**How it works**
+- extract writing patterns, venue expectations, and rebuttal strategies from papers,
+- extract engineering patterns and solution structure from Kaggle workflows,
+- feed those insights back into skills and reference material.
+
+### Skill Evolution System
+
+Claude Scholar also contains a self-improvement loop for its own skills.
+
+| Type | Name | One-line explanation |
+|---|---|---|
+| Skill | `skill-development` | Create new skills with clear triggers, structure, and progressive disclosure. |
+| Skill | `skill-quality-reviewer` | Review skills across content quality, organization, style, and structural integrity. |
+| Skill | `skill-improver` | Apply structured improvement plans to evolve existing skills. |
+
+**How it works**
+- create new skills with clear trigger descriptions,
+- review them across quality dimensions,
+- apply structured improvements and iterate.
+
+## Documentation
+
+- [MCP_SETUP.md](./MCP_SETUP.md) — Zotero/browser MCP setup
+- [OBSIDIAN_SETUP.md](./OBSIDIAN_SETUP.md) — Obsidian knowledge base workflow
+- [CLAUDE.md](./CLAUDE.md) — full local configuration, skill list, and workflow details
+- [CLAUDE.zh-CN.md](./CLAUDE.zh-CN.md) — Chinese version of the main configuration doc
+- [settings.json.template](./settings.json.template) — optional settings template for hooks/plugins/MCP
 
 ## Project Rules
 
-### Coding Style
+Claude Scholar includes project rules for:
+- coding style,
+- agent orchestration,
+- security,
+- experiment reproducibility.
 
-Enforced by `rules/coding-style.md`:
-- **File Size**: 200-400 lines maximum
-- **Immutability**: Use `@dataclass(frozen=True)` for configs
-- **Type Hints**: Required for all functions
-- **Patterns**: Factory & Registry for all modules
-- **Config-Driven**: Models accept only `cfg` parameter
-
-### Agent Orchestration
-
-Defined in `rules/agents.md`:
-- Available agent types and purposes
-- Parallel task execution
-- Multi-perspective analysis
-
-### Security
-
-Defined in `rules/security.md`:
-- Secrets management (environment variables, `.env` files)
-- Sensitive file protection (never commit tokens, keys, credentials)
-- Pre-commit security checks via hooks
-
-### Experiment Reproducibility
-
-Defined in `rules/experiment-reproducibility.md`:
-- Random seed management for reproducibility
-- Configuration recording (Hydra auto-save)
-- Environment recording and checkpoint management
+These are reflected in the shipped rules and in `CLAUDE.md`.
 
 ## Contributing
 
-This semi-automated research assistant is still highly customizable, and you're welcome to:
-- Fork and adapt for your own research
-- Submit issues for bugs
-- Suggest improvements via issues
+Issues, PRs, and workflow improvements are welcome.
+
+If you propose changes to installer behavior, Zotero workflows, or Obsidian routing, please include:
+- the user scenario,
+- the current limitation,
+- the expected behavior,
+- and any compatibility concerns.
 
 ## License
 
-MIT License
+MIT License.
+
+## Citation
+
+If Claude Scholar helps your research or engineering workflow, you can cite the repository as:
+
+```bibtex
+@misc{claude_scholar_2026,
+  title        = {Claude Scholar: Semi-automated research assistant for academic research and software development},
+  author       = {Gaorui Zhang},
+  year         = {2026},
+  howpublished = {\url{https://github.com/Galaxy-Dawn/claude-scholar}},
+  note         = {GitHub repository}
+}
+```
 
 ## Acknowledgments
 
